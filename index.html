@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Kopi</title>
+<style>
+  :root{
+    --bg-deep: #0a0630;
+    --bg-blue: #2a1fd1;
+    --bg-blue2: #4533f0;
+    --panel: #ffffff;
+    --ink: #ffffff;
+    --ink-dim: rgba(255,255,255,0.68);
+    --dark-ink: #14112e;
+    --dark-ink-dim: #6b6792;
+    --line: rgba(255,255,255,0.16);
+    --accent: #5b3df0;
+    --accent2: #ff6fae;
+    --mono: 'IBM Plex Mono', 'Courier New', monospace;
+    --serif: 'Source Serif Pro', Georgia, serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 12% 88%, #0a0630 0%, #0a0630 28%, transparent 29%),
+      linear-gradient(135deg, var(--bg-blue) 0%, var(--bg-blue2) 55%, #3a2bdb 100%);
+    background-color:var(--bg-deep);
+    color:var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+    min-height:100vh;
+  }
+  .stage{
+    max-width:1180px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    padding:48px 32px;
+  }
+  .layout{
+    display:grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap:0;
+    width:100%;
+    background:rgba(10,6,48,0.35);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow: 0 40px 90px rgba(5,2,30,0.55);
+    min-height:600px;
+  }
+
+  /* LEFT: brand panel */
+  .brand{
+    position:relative;
+    padding:56px 48px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    overflow:hidden;
+    background: linear-gradient(135deg, #2a1fd1 0%, #1c1290 100%);
+  }
+  nav.topnav{
+    position:absolute;
+    top:36px;
+    left:48px;
+    right:48px;
+    display:flex;
+    gap:28px;
+    font-size:13px;
+    color:var(--ink-dim);
+    font-weight:500;
+  }
+  nav.topnav span{cursor:default;}
+
+  .blob{
+    position:absolute;
+    width:480px;
+    height:480px;
+    right:-160px;
+    top:50%;
+    transform:translateY(-50%);
+    border-radius:62% 38% 55% 45% / 48% 55% 45% 52%;
+    background: radial-gradient(circle at 32% 28%, #ffffff 0%, #e9c7ff 14%, #9a7bff 32%, #5b3df0 52%, #2a1fd1 72%, #150f6e 100%);
+    filter: blur(0.5px);
+    box-shadow: 30px 50px 90px rgba(5,2,40,0.5), inset -20px -20px 60px rgba(0,0,0,0.25);
+    opacity:0.9;
+  }
+  .blob::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    background: radial-gradient(circle at 65% 65%, rgba(255,111,174,0.55) 0%, transparent 45%);
+  }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11.5px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.55);
+    margin-bottom:14px;
+    position:relative;
+    z-index:2;
+  }
+  h1.brandname{
+    font-family:var(--serif);
+    font-size:46px;
+    font-weight:600;
+    line-height:1.05;
+    margin:0 0 18px;
+    letter-spacing:-0.01em;
+    position:relative;
+    z-index:2;
+    max-width:380px;
+  }
+  p.tagline{
+    color:var(--ink-dim);
+    font-size:15px;
+    line-height:1.65;
+    max-width:340px;
+    margin:0 0 32px;
+    position:relative;
+    z-index:2;
+  }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,0.95);
+    color:var(--dark-ink);
+    font-size:13px;
+    font-weight:600;
+    padding:11px 22px;
+    border-radius:999px;
+    width:fit-content;
+    position:relative;
+    z-index:2;
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  }
+  .pill::after{content:'→';}
+
+  .brand-footer{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:28px;
+    position:relative;
+    z-index:2;
+  }
+  .brand-footer .footer-text{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.04em;
+    color:rgba(255,255,255,0.45);
+  }
+  .brand-footer img{
+    height:16px;
+    width:auto;
+    display:none;
+  }
+
+
+  /* RIGHT: calculator panel */
+  .calc-panel{
+    background:linear-gradient(160deg, rgba(20,14,70,0.55) 0%, rgba(10,6,48,0.7) 100%);
+    padding:48px 44px;
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+    justify-content:center;
+  }
+  .calc-card{
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:24px 26px;
+  }
+  .calc-card h2{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.5);
+    margin:0 0 16px;
+  }
+  .currency-input{position:relative;}
+  .currency-input span{
+    position:absolute;
+    left:16px;
+    top:50%;
+    transform:translateY(-50%);
+    color:rgba(255,255,255,0.5);
+    font-family:var(--mono);
+    font-size:20px;
+  }
+  input[type=number]{
+    width:100%;
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--line);
+    border-radius:8px;
+    color:var(--ink);
+    font-family:var(--mono);
+    font-size:24px;
+    padding:14px 16px 14px 36px;
+    outline:none;
+    transition:border-color .15s, background .15s;
+  }
+  input[type=number]:focus{
+    border-color:var(--accent2);
+    background:rgba(255,255,255,0.09);
+  }
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+
+  .params{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:10px;
+    margin-top:16px;
+  }
+  .param label{
+    display:block;
+    font-size:10.5px;
+    color:rgba(255,255,255,0.45);
+    margin-bottom:6px;
+    font-family:var(--mono);
+  }
+  .param input{
+    width:100%;
+    background:rgba(255,255,255,0.05);
+    border:1px solid var(--line);
+    border-radius:6px;
+    color:var(--ink);
+    font-family:var(--mono);
+    font-size:13px;
+    padding:8px 9px;
+    outline:none;
+  }
+  .param input:focus{border-color:var(--accent2);}
+  .param .unit{color:rgba(255,255,255,0.4); font-size:10px;}
+
+  details summary{
+    cursor:pointer;
+    color:rgba(255,255,255,0.5);
+    font-size:12.5px;
+    font-family:var(--mono);
+    margin-top:14px;
+    list-style:none;
+  }
+  details summary::-webkit-details-marker{display:none;}
+  details summary::before{content:'▸ '; color:var(--accent2);}
+  details[open] summary::before{content:'▾ '; color:var(--accent2);}
+
+  table{width:100%; border-collapse:collapse;}
+  tr.row td{
+    padding:11px 2px;
+    border-bottom:1px solid var(--line);
+    font-size:13.5px;
+  }
+  tr.row:last-child td{border-bottom:none;}
+  td.label{color:rgba(255,255,255,0.55);}
+  td.value{
+    text-align:right;
+    font-family:var(--mono);
+    font-size:14.5px;
+  }
+  td.negative{color:#9aa3ff;}
+  tr.subtotal td{
+    font-weight:600;
+    border-top:1px solid var(--line);
+    border-bottom:none;
+    padding-top:14px;
+  }
+
+  .total-box{
+    background:linear-gradient(120deg, rgba(91,61,240,0.35), rgba(255,111,174,0.18));
+    border:1px solid rgba(255,111,174,0.4);
+    border-radius:10px;
+    padding:18px 22px;
+    margin-top:4px;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+  }
+  .total-box .tlabel{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.6);
+  }
+  .total-box .tvalue{
+    font-family:var(--serif);
+    font-size:25px;
+    color:#ffffff;
+    font-weight:600;
+  }
+
+  .footer{
+    margin-top:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+  .footer img{height:16px; width:auto;}
+  .footer-text{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.04em;
+    color:rgba(255,255,255,0.4);
+  }
+  .footer-text strong{color:rgba(255,255,255,0.75); font-weight:600;}
+
+  @media (max-width:860px){
+    .layout{grid-template-columns:1fr;}
+    .brand{padding:60px 32px 100px;}
+    .blob{
+      width:280px; height:280px;
+      right:-90px; top:auto; bottom:-100px; transform:none;
+    }
+    nav.topnav{left:32px; right:32px;}
+    h1.brandname{font-size:34px; max-width:none;}
+    .calc-panel{padding:36px 28px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="layout">
+
+    <div class="brand">
+      
+      <div class="eyebrow">Herramienta interna</div>
+      <h1 class="brandname">Calculadora Kopi</h1>
+      <p class="tagline">Define cuánto debe recibir tu empleado en mano y obtén al instante el sueldo base, los aportes de ley y el costo total anual de contratarlo.</p>
+      <div class="pill">Calcular ahora</div>
+
+      <div class="brand-footer">
+        <span class="footer-text">Powered by</span>
+        <img id="brand-logo" src="https://res.cloudinary.com/dsifguhqm/image/upload/v1779123583/logoo_q4fn2z.png" alt="Kopiloto">
+      </div>
+    </div>
+
+    <div class="calc-panel">
+
+      <div class="calc-card">
+        <h2>Neto a recibir (mensual)</h2>
+        <div class="currency-input">
+          <span>$</span>
+          <input type="number" id="netoInput" value="1500" min="0" step="0.01">
+        </div>
+
+        <details>
+          <summary>Parámetros legales (ajustables)</summary>
+          <div class="params">
+            <div class="param">
+              <label>IESS personal</label>
+              <input type="number" id="iessPersonal" value="9.45" step="0.01">
+              <span class="unit">%</span>
+            </div>
+            <div class="param">
+              <label>Aporte patronal</label>
+              <input type="number" id="aportePatronal" value="12.15" step="0.01">
+              <span class="unit">%</span>
+            </div>
+            <div class="param">
+              <label>Décimo cuarto</label>
+              <input type="number" id="decimoCuarto" value="482" step="0.01">
+              <span class="unit">USD/año</span>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="calc-card">
+        <h2>Desglose mensual</h2>
+        <table>
+          <tr class="row">
+            <td class="label">Sueldo base (IESS)</td>
+            <td class="value" id="m-base">—</td>
+          </tr>
+          <tr class="row">
+            <td class="label">(–) Aporte IESS personal</td>
+            <td class="value negative" id="m-iess">—</td>
+          </tr>
+          <tr class="subtotal">
+            <td class="label">Valor neto a recibir</td>
+            <td class="value" id="m-neto">—</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="calc-card">
+        <h2>Costo anual completo</h2>
+        <table>
+          <tr class="row">
+            <td class="label">Sueldo (anual)</td>
+            <td class="value" id="a-sueldo">—</td>
+          </tr>
+          <tr class="row">
+            <td class="label">Décimo tercero</td>
+            <td class="value" id="a-decimo3">—</td>
+          </tr>
+          <tr class="row">
+            <td class="label">Décimo cuarto</td>
+            <td class="value" id="a-decimo4">—</td>
+          </tr>
+          <tr class="row">
+            <td class="label">Aporte patronal</td>
+            <td class="value" id="a-patronal">—</td>
+          </tr>
+        </table>
+        <div class="total-box">
+          <span class="tlabel">Costo total primer año</span>
+          <span class="tvalue" id="a-total">—</span>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<script>
+function fmt(n){
+  return n.toLocaleString('es-EC', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function calcular(){
+  const neto = parseFloat(document.getElementById('netoInput').value) || 0;
+  const iessPct = (parseFloat(document.getElementById('iessPersonal').value) || 0) / 100;
+  const patronalPct = (parseFloat(document.getElementById('aportePatronal').value) || 0) / 100;
+  const decimo4 = parseFloat(document.getElementById('decimoCuarto').value) || 0;
+
+  const sueldoMensual = neto / (1 - iessPct);
+  const iessMensual = sueldoMensual * iessPct;
+  const netoCalculado = sueldoMensual - iessMensual;
+
+  const sueldoAnual = sueldoMensual * 12;
+  const decimo3 = sueldoMensual;
+  const aportePatronal = sueldoAnual * patronalPct;
+
+  const totalAnual = sueldoAnual + decimo3 + decimo4 + aportePatronal;
+
+  document.getElementById('m-base').textContent = '$' + fmt(sueldoMensual);
+  document.getElementById('m-iess').textContent = '-$' + fmt(iessMensual);
+  document.getElementById('m-neto').textContent = '$' + fmt(netoCalculado);
+
+  document.getElementById('a-sueldo').textContent = '$' + fmt(sueldoAnual);
+  document.getElementById('a-decimo3').textContent = '$' + fmt(decimo3);
+  document.getElementById('a-decimo4').textContent = '$' + fmt(decimo4);
+  document.getElementById('a-patronal').textContent = '$' + fmt(aportePatronal);
+  document.getElementById('a-total').textContent = '$' + fmt(totalAnual);
+}
+
+document.getElementById('netoInput').addEventListener('input', calcular);
+document.getElementById('iessPersonal').addEventListener('input', calcular);
+document.getElementById('aportePatronal').addEventListener('input', calcular);
+document.getElementById('decimoCuarto').addEventListener('input', calcular);
+
+calcular();
+
+const logoEl = document.getElementById('brand-logo');
+if (logoEl.getAttribute('src')) {
+  logoEl.style.display = 'inline-block';
+}
+</script>
+</body>
+</html>
