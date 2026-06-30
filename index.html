@@ -4,327 +4,562 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculadora Kopi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
+  :root {
     --bg-deep: #0a0630;
     --bg-blue: #2a1fd1;
     --bg-blue2: #4533f0;
     --panel: #ffffff;
     --ink: #ffffff;
-    --ink-dim: rgba(255,255,255,0.68);
+    --ink-dim: rgba(255, 255, 255, 0.7);
     --dark-ink: #14112e;
     --dark-ink-dim: #6b6792;
-    --line: rgba(255,255,255,0.16);
+    --line: rgba(255, 255, 255, 0.08);
     --accent: #5b3df0;
     --accent2: #ff6fae;
-    --mono: 'IBM Plex Mono', 'Courier New', monospace;
-    --serif: 'Source Serif Pro', Georgia, serif;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-title: 'Outfit', var(--font-sans);
+    --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
   }
-  *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:
-      radial-gradient(circle at 12% 88%, #0a0630 0%, #0a0630 28%, transparent 29%),
-      linear-gradient(135deg, var(--bg-blue) 0%, var(--bg-blue2) 55%, #3a2bdb 100%);
-    background-color:var(--bg-deep);
-    color:var(--ink);
-    font-family: 'Inter', -apple-system, sans-serif;
-    min-height:100vh;
+
+  * {
+    box-sizing: border-box;
   }
-  .stage{
-    max-width:1180px;
-    margin:0 auto;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    padding:48px 32px;
+
+  body {
+    margin: 0;
+    background: radial-gradient(circle at 12% 88%, #0f0a42 0%, #06041a 100%);
+    background-color: var(--bg-deep);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
   }
-  .layout{
-    display:grid;
-    grid-template-columns: 1.05fr 1fr;
-    gap:0;
-    width:100%;
-    background:rgba(10,6,48,0.35);
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow: 0 40px 90px rgba(5,2,30,0.55);
-    min-height:600px;
+
+  .stage {
+    width: 100%;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 
   /* LEFT: brand panel */
-  .brand{
-    position:relative;
-    padding:56px 48px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    overflow:hidden;
-    background: linear-gradient(135deg, #2a1fd1 0%, #1c1290 100%);
-  }
-  nav.topnav{
-    position:absolute;
-    top:36px;
-    left:48px;
-    right:48px;
-    display:flex;
-    gap:28px;
-    font-size:13px;
-    color:var(--ink-dim);
-    font-weight:500;
-  }
-  nav.topnav span{cursor:default;}
-
-  .blob{
-    position:absolute;
-    width:480px;
-    height:480px;
-    right:-160px;
-    top:50%;
-    transform:translateY(-50%);
-    border-radius:62% 38% 55% 45% / 48% 55% 45% 52%;
-    background: radial-gradient(circle at 32% 28%, #ffffff 0%, #e9c7ff 14%, #9a7bff 32%, #5b3df0 52%, #2a1fd1 72%, #150f6e 100%);
-    filter: blur(0.5px);
-    box-shadow: 30px 50px 90px rgba(5,2,40,0.5), inset -20px -20px 60px rgba(0,0,0,0.25);
-    opacity:0.9;
-  }
-  .blob::after{
-    content:'';
-    position:absolute;
-    inset:0;
-    border-radius:inherit;
-    background: radial-gradient(circle at 65% 65%, rgba(255,111,174,0.55) 0%, transparent 45%);
+  .brand {
+    position: relative;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(42, 31, 209, 0.85) 0%, rgba(28, 18, 144, 0.95) 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
   }
 
-  .eyebrow{
-    font-family:var(--mono);
-    font-size:11.5px;
-    letter-spacing:0.22em;
-    text-transform:uppercase;
-    color:rgba(255,255,255,0.55);
-    margin-bottom:14px;
-    position:relative;
-    z-index:2;
-  }
-  h1.brandname{
-    font-family:var(--serif);
-    font-size:46px;
-    font-weight:600;
-    line-height:1.05;
-    margin:0 0 18px;
-    letter-spacing:-0.01em;
-    position:relative;
-    z-index:2;
-    max-width:380px;
-  }
-  p.tagline{
-    color:var(--ink-dim);
-    font-size:15px;
-    line-height:1.65;
-    max-width:340px;
-    margin:0 0 32px;
-    position:relative;
-    z-index:2;
-  }
-  .pill{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    background:rgba(255,255,255,0.95);
-    color:var(--dark-ink);
-    font-size:13px;
-    font-weight:600;
-    padding:11px 22px;
-    border-radius:999px;
-    width:fit-content;
-    position:relative;
-    z-index:2;
-    box-shadow:0 8px 24px rgba(0,0,0,0.25);
-  }
-  .pill::after{content:'→';}
-
-  .brand-footer{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    margin-top:28px;
-    position:relative;
-    z-index:2;
-  }
-  .brand-footer .footer-text{
-    font-family:var(--mono);
-    font-size:11px;
-    letter-spacing:0.04em;
-    color:rgba(255,255,255,0.45);
-  }
-  .brand-footer img{
-    height:16px;
-    width:auto;
-    display:none;
+  .brand::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--bg-blue2) 0%, transparent 70%);
+    top: -60px;
+    left: -60px;
+    filter: blur(60px);
+    opacity: 0.6;
+    pointer-events: none;
   }
 
+  .brand::after {
+    content: '';
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, var(--accent2) 0%, transparent 70%);
+    bottom: 40px;
+    right: -60px;
+    filter: blur(60px);
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  .brand-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 12px;
+  }
+
+  h1.brandname {
+    font-family: var(--font-title);
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+  }
+
+  p.tagline {
+    color: var(--ink-dim);
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0 0 20px;
+    max-width: 440px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 18px;
+    border-radius: 999px;
+    width: fit-content;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+
+  .pill:hover {
+    background: #ffffff;
+    color: var(--bg-deep);
+    border-color: #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .pill::after {
+    content: '→';
+    transition: transform 0.2s ease;
+  }
+
+  .pill:hover::after {
+    transform: translateX(4px);
+  }
+
+  /* Informative Note */
+  .info-note {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 20px;
+    position: relative;
+    z-index: 2;
+    max-width: 450px;
+  }
+
+  .note-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-title);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--accent2);
+    margin-bottom: 6px;
+  }
+
+  .note-header svg {
+    color: var(--accent2);
+    flex-shrink: 0;
+  }
+
+  .note-content p {
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--ink-dim);
+    margin: 0 0 8px;
+  }
+
+  .note-content ul {
+    margin: 0;
+    padding-left: 16px;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .note-content li {
+    margin-bottom: 4px;
+  }
+
+  .note-content li:last-child {
+    margin-bottom: 0;
+  }
+
+  .brand-footer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .brand-footer .footer-text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+  }
+
+  .brand-logo-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .brand-footer img {
+    height: 32px; /* Enlarged Kopiloto logo */
+    width: auto;
+    display: none;
+    filter: brightness(1.1);
+    transition: opacity 0.2s;
+  }
+
+  .brand-footer img:hover {
+    opacity: 0.9;
+  }
 
   /* RIGHT: calculator panel */
-  .calc-panel{
-    background:linear-gradient(160deg, rgba(20,14,70,0.55) 0%, rgba(10,6,48,0.7) 100%);
-    padding:48px 44px;
-    display:flex;
-    flex-direction:column;
-    gap:22px;
-    justify-content:center;
+  .calc-panel {
+    background: rgba(10, 6, 48, 0.4);
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
   }
-  .calc-card{
-    background:rgba(255,255,255,0.04);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:24px 26px;
+
+  .calc-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 20px;
+    transition: all 0.3s ease;
   }
-  .calc-card h2{
-    font-family:var(--mono);
-    font-size:11px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:rgba(255,255,255,0.5);
-    margin:0 0 16px;
+
+  .calc-card:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.08);
   }
-  .currency-input{position:relative;}
-  .currency-input span{
-    position:absolute;
-    left:16px;
-    top:50%;
-    transform:translateY(-50%);
-    color:rgba(255,255,255,0.5);
-    font-family:var(--mono);
-    font-size:20px;
+
+  .calc-card h2 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0 0 12px;
   }
-  input[type=number]{
-    width:100%;
-    background:rgba(255,255,255,0.06);
-    border:1px solid var(--line);
-    border-radius:8px;
-    color:var(--ink);
-    font-family:var(--mono);
-    font-size:24px;
-    padding:14px 16px 14px 36px;
-    outline:none;
-    transition:border-color .15s, background .15s;
+
+  .currency-input {
+    position: relative;
+    display: flex;
+    align-items: center;
   }
-  input[type=number]:focus{
-    border-color:var(--accent2);
-    background:rgba(255,255,255,0.09);
+
+  .currency-input span {
+    position: absolute;
+    left: 16px;
+    color: rgba(255, 255, 255, 0.4);
+    font-family: var(--font-title);
+    font-size: 22px;
+    font-weight: 300;
   }
+
+  input[type=number] {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 24px;
+    padding: 12px 14px 12px 36px;
+    outline: none;
+    transition: all 0.25s ease;
+  }
+
+  input[type=number]:focus {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 4px rgba(91, 61, 240, 0.15);
+  }
+
   input[type=number]::-webkit-outer-spin-button,
-  input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-
-  .params{
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:10px;
-    margin-top:16px;
-  }
-  .param label{
-    display:block;
-    font-size:10.5px;
-    color:rgba(255,255,255,0.45);
-    margin-bottom:6px;
-    font-family:var(--mono);
-  }
-  .param input{
-    width:100%;
-    background:rgba(255,255,255,0.05);
-    border:1px solid var(--line);
-    border-radius:6px;
-    color:var(--ink);
-    font-family:var(--mono);
-    font-size:13px;
-    padding:8px 9px;
-    outline:none;
-  }
-  .param input:focus{border-color:var(--accent2);}
-  .param .unit{color:rgba(255,255,255,0.4); font-size:10px;}
-
-  details summary{
-    cursor:pointer;
-    color:rgba(255,255,255,0.5);
-    font-size:12.5px;
-    font-family:var(--mono);
-    margin-top:14px;
-    list-style:none;
-  }
-  details summary::-webkit-details-marker{display:none;}
-  details summary::before{content:'▸ '; color:var(--accent2);}
-  details[open] summary::before{content:'▾ '; color:var(--accent2);}
-
-  table{width:100%; border-collapse:collapse;}
-  tr.row td{
-    padding:11px 2px;
-    border-bottom:1px solid var(--line);
-    font-size:13.5px;
-  }
-  tr.row:last-child td{border-bottom:none;}
-  td.label{color:rgba(255,255,255,0.55);}
-  td.value{
-    text-align:right;
-    font-family:var(--mono);
-    font-size:14.5px;
-  }
-  td.negative{color:#9aa3ff;}
-  tr.subtotal td{
-    font-weight:600;
-    border-top:1px solid var(--line);
-    border-bottom:none;
-    padding-top:14px;
+  input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
 
-  .total-box{
-    background:linear-gradient(120deg, rgba(91,61,240,0.35), rgba(255,111,174,0.18));
-    border:1px solid rgba(255,111,174,0.4);
-    border-radius:10px;
-    padding:18px 22px;
-    margin-top:4px;
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-  }
-  .total-box .tlabel{
-    font-family:var(--mono);
-    font-size:11px;
-    letter-spacing:0.1em;
-    text-transform:uppercase;
-    color:rgba(255,255,255,0.6);
-  }
-  .total-box .tvalue{
-    font-family:var(--serif);
-    font-size:25px;
-    color:#ffffff;
-    font-weight:600;
+  .params {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
   }
 
-  .footer{
-    margin-top:8px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
+  .param {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
-  .footer img{height:16px; width:auto;}
-  .footer-text{
-    font-family:var(--mono);
-    font-size:11px;
-    letter-spacing:0.04em;
-    color:rgba(255,255,255,0.4);
-  }
-  .footer-text strong{color:rgba(255,255,255,0.75); font-weight:600;}
 
-  @media (max-width:860px){
-    .layout{grid-template-columns:1fr;}
-    .brand{padding:60px 32px 100px;}
-    .blob{
-      width:280px; height:280px;
-      right:-90px; top:auto; bottom:-100px; transform:none;
+  .param label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-family: var(--font-sans);
+  }
+
+  .param-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .param input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 8px 24px 8px 10px;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  /* Extra padding for decimoCuarto unit label */
+  .param:last-child input {
+    padding-right: 58px;
+  }
+
+  .param input:focus {
+    border-color: var(--accent);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .param .unit {
+    position: absolute;
+    right: 8px;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 10px;
+    pointer-events: none;
+    font-weight: 500;
+    font-family: var(--font-sans);
+  }
+
+  details {
+    margin-top: 12px;
+  }
+
+  details summary {
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 11px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    list-style: none;
+    outline: none;
+    user-select: none;
+    transition: color 0.2s;
+  }
+
+  details summary:hover {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details summary::before {
+    content: '→ ';
+    color: var(--accent2);
+    display: inline-block;
+    margin-right: 4px;
+    transition: transform 0.2s ease;
+  }
+
+  details[open] summary::before {
+    transform: rotate(90deg);
+  }
+
+  /* Results layout (Side-by-side) */
+  .results-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 24px;
+  }
+
+  .results-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .results-col h3 {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0 0 10px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  tr.row td {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  tr.row:last-child td {
+    border-bottom: none;
+  }
+
+  td.label {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  td.value {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+  }
+
+  td.negative {
+    color: var(--accent2);
+  }
+
+  tr.subtotal td {
+    font-weight: 600;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: none;
+    padding-top: 12px;
+  }
+
+  tr.subtotal td.label {
+    color: #ffffff;
+  }
+
+  tr.subtotal td.value {
+    font-size: 15px;
+    color: var(--accent2);
+  }
+
+  .total-box {
+    background: linear-gradient(135deg, rgba(91, 61, 240, 0.2) 0%, rgba(255, 111, 174, 0.08) 100%);
+    border: 1px solid rgba(255, 111, 174, 0.2);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-top: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .total-box .tlabel {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .total-box .tvalue {
+    font-family: var(--font-title);
+    font-size: 24px;
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  @media (max-width: 900px) {
+    .stage {
+      padding: 16px;
     }
-    nav.topnav{left:32px; right:32px;}
-    h1.brandname{font-size:34px; max-width:none;}
-    .calc-panel{padding:36px 28px;}
+    .layout {
+      grid-template-columns: 1fr;
+      border-radius: 16px;
+    }
+    .brand {
+      padding: 32px 24px;
+      border-right: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .brand::after {
+      bottom: auto;
+      top: 50%;
+    }
+    .calc-panel {
+      padding: 24px;
+    }
+    h1.brandname {
+      font-size: 30px;
+    }
+    .pill {
+      margin-bottom: 16px;
+    }
+    .info-note {
+      max-width: 100%;
+    }
+    .results-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
   }
 </style>
 </head>
@@ -334,20 +569,43 @@
   <div class="layout">
 
     <div class="brand">
-      
-      <div class="eyebrow">Herramienta interna</div>
-      <h1 class="brandname">Calculadora Kopi</h1>
-      <p class="tagline">Define cuánto debe recibir tu empleado en mano y obtén al instante el sueldo base, los aportes de ley y el costo total anual de contratarlo.</p>
-      <div class="pill">Calcular ahora</div>
+      <div class="brand-content">
+        <div class="eyebrow">Herramienta interna</div>
+        <h1 class="brandname">Calculadora Kopi</h1>
+        <p class="tagline">Define cuánto debe recibir tu empleado en mano y obtén al instante el sueldo base, los aportes de ley y el costo total anual de contratarlo.</p>
+        <div class="pill">Calcular ahora</div>
+      </div>
+
+      <!-- Nota Informativa -->
+      <div class="info-note">
+        <div class="note-header">
+          <svg class="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>Esta es una herramienta informativa</span>
+        </div>
+        <div class="note-content">
+          <p>Este cálculo te permite tener una noción básica sobre el valor que recibiría tu trabajador y el costo que podrías asumir como empleador.</p>
+          <ul>
+            <li>El cálculo no considera bonos, horas extras y otros rubros variables adicionales.</li>
+            <li>A partir del segundo año el valor incrementa debido a los fondos de reserva.</li>
+          </ul>
+        </div>
+      </div>
 
       <div class="brand-footer">
         <span class="footer-text">Powered by</span>
-        <img id="brand-logo" src="https://res.cloudinary.com/dsifguhqm/image/upload/v1779123583/logoo_q4fn2z.png" alt="Kopiloto">
+        <div class="brand-logo-container">
+          <img id="brand-logo" src="https://res.cloudinary.com/dsifguhqm/image/upload/v1779123583/logoo_q4fn2z.png" alt="Kopiloto">
+        </div>
       </div>
     </div>
 
     <div class="calc-panel">
 
+      <!-- input card -->
       <div class="calc-card">
         <h2>Neto a recibir (mensual)</h2>
         <div class="currency-input">
@@ -360,67 +618,83 @@
           <div class="params">
             <div class="param">
               <label>IESS personal</label>
-              <input type="number" id="iessPersonal" value="9.45" step="0.01">
-              <span class="unit">%</span>
+              <div class="param-input-container">
+                <input type="number" id="iessPersonal" value="9.45" step="0.01">
+                <span class="unit">%</span>
+              </div>
             </div>
             <div class="param">
               <label>Aporte patronal</label>
-              <input type="number" id="aportePatronal" value="12.15" step="0.01">
-              <span class="unit">%</span>
+              <div class="param-input-container">
+                <input type="number" id="aportePatronal" value="12.15" step="0.01">
+                <span class="unit">%</span>
+              </div>
             </div>
             <div class="param">
               <label>Décimo cuarto</label>
-              <input type="number" id="decimoCuarto" value="482" step="0.01">
-              <span class="unit">USD/año</span>
+              <div class="param-input-container">
+                <input type="number" id="decimoCuarto" value="482" step="0.01">
+                <span class="unit">USD/año</span>
+              </div>
             </div>
           </div>
         </details>
       </div>
 
-      <div class="calc-card">
-        <h2>Desglose mensual</h2>
-        <table>
-          <tr class="row">
-            <td class="label">Sueldo base (IESS)</td>
-            <td class="value" id="m-base">—</td>
-          </tr>
-          <tr class="row">
-            <td class="label">(–) Aporte IESS personal</td>
-            <td class="value negative" id="m-iess">—</td>
-          </tr>
-          <tr class="subtotal">
-            <td class="label">Valor neto a recibir</td>
-            <td class="value" id="m-neto">—</td>
-          </tr>
-        </table>
-      </div>
+      <!-- combined results card -->
+      <div class="calc-card results-card">
+        <div class="results-grid">
+          
+          <!-- Monthly Breakdown Column -->
+          <div class="results-col">
+            <h3>Desglose mensual</h3>
+            <table>
+              <tr class="row">
+                <td class="label">Sueldo base (IESS)</td>
+                <td class="value" id="m-base">—</td>
+              </tr>
+              <tr class="row">
+                <td class="label">(–) Aporte IESS personal</td>
+                <td class="value negative" id="m-iess">—</td>
+              </tr>
+              <tr class="subtotal">
+                <td class="label">Neto a recibir</td>
+                <td class="value" id="m-neto">—</td>
+              </tr>
+            </table>
+          </div>
 
-      <div class="calc-card">
-        <h2>Costo anual completo</h2>
-        <table>
-          <tr class="row">
-            <td class="label">Sueldo (anual)</td>
-            <td class="value" id="a-sueldo">—</td>
-          </tr>
-          <tr class="row">
-            <td class="label">Décimo tercero</td>
-            <td class="value" id="a-decimo3">—</td>
-          </tr>
-          <tr class="row">
-            <td class="label">Décimo cuarto</td>
-            <td class="value" id="a-decimo4">—</td>
-          </tr>
-          <tr class="row">
-            <td class="label">Aporte patronal</td>
-            <td class="value" id="a-patronal">—</td>
-          </tr>
-        </table>
+          <!-- Annual Breakdown Column -->
+          <div class="results-col">
+            <h3>Costo anual completo</h3>
+            <table>
+              <tr class="row">
+                <td class="label">Sueldo anual</td>
+                <td class="value" id="a-sueldo">—</td>
+              </tr>
+              <tr class="row">
+                <td class="label">Décimo tercero</td>
+                <td class="value" id="a-decimo3">—</td>
+              </tr>
+              <tr class="row">
+                <td class="label">Décimo cuarto</td>
+                <td class="value" id="a-decimo4">—</td>
+              </tr>
+              <tr class="row">
+                <td class="label">Aporte patronal</td>
+                <td class="value" id="a-patronal">—</td>
+              </tr>
+            </table>
+          </div>
+
+        </div>
+
+        <!-- Costo Total Box -->
         <div class="total-box">
           <span class="tlabel">Costo total primer año</span>
           <span class="tvalue" id="a-total">—</span>
         </div>
       </div>
-
 
     </div>
   </div>
@@ -457,6 +731,11 @@ function calcular(){
   document.getElementById('a-patronal').textContent = '$' + fmt(aportePatronal);
   document.getElementById('a-total').textContent = '$' + fmt(totalAnual);
 }
+
+// Micro-interaction: Focus main input when clicking the "Calcular ahora" pill
+document.querySelector('.pill').addEventListener('click', () => {
+  document.getElementById('netoInput').focus();
+});
 
 document.getElementById('netoInput').addEventListener('input', calcular);
 document.getElementById('iessPersonal').addEventListener('input', calcular);
